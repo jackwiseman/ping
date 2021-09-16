@@ -24,16 +24,18 @@ func main() {
 	// these two will eventually be decided as user input
 	var countInput int = 5
 	var siteInput string = "google.com"
-	var numRoutines int = 2
+	var numRoutines int = 3
 
 	channel := make(chan string)
 
+	// create numRoutines subroutines pinging siteInput (countInput times each)
 	for r := 0; r < numRoutines; r++ {
 		go ping(countInput, siteInput, channel)
 	}
 
-	output := <-channel
-
-	fmt.Println(output)
+	// read subroutines channels and print out ping result
+	for i := 1; i <= numRoutines; i++ {
+		fmt.Println(<-channel)
+		fmt.Println("\n")
+	}
 }
-
