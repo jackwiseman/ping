@@ -17,14 +17,13 @@ func ping(count int, site string, channel chan string) {
 	var result string = string(out)
 
 	channel <- result
-//	fmt.Println(string(out))
 }
 
 func main() {
 	// these two will eventually be decided as user input
-	var countInput int = 5
+	var countInput int = 5 
 	var siteInput string = "google.com"
-	var numRoutines int = 3
+	var numRoutines int = 50
 
 	channel := make(chan string)
 
@@ -34,8 +33,7 @@ func main() {
 	}
 
 	// read subroutines channels and print out ping result
-	for i := 1; i <= numRoutines; i++ {
+	for i := 0; i < numRoutines; i++ {
 		fmt.Println(<-channel)
-		fmt.Println("\n")
 	}
 }
