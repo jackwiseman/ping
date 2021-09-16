@@ -5,12 +5,13 @@ import (
 	"log"
 	"fmt"
 	"strconv"
+	"strings"
 )
 
 func ping(count int, site string, channel chan string) {
 	var c string = strconv.Itoa(count)
 
-	out, err := exec.Command("ping", "-c", c,  site).Output()
+	out, err := exec.Command("ping", "-c", c,  site, "-q").Output()
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -19,11 +20,21 @@ func ping(count int, site string, channel chan string) {
 	channel <- result
 }
 
+/*
+Trims all unneccessary info from commandline ping -q call, so that we only see
+ping stats in the form min/avg/max/stddev in ms
+*/
+func printer(raw string) {
+	sliceBegin := strings.Index(raw, "=")
+	sliceEnd := strings.Index(raw[sliceBegin + 2:], " ")
+	fmt.Println(raw[sliceBegin + 2:sliceBegin + sliceEnd + 2]) // take position after "= "
+}
+
 func main() {
 	// these two will eventually be decided as user input
-	var countInput int = 5 
+	var countInput int = 5
 	var siteInput string = "google.com"
-	var numRoutines int = 50
+	var numRoutines int = 5
 
 	channel := make(chan string)
 
@@ -34,6 +45,7 @@ func main() {
 
 	// read subroutines channels and print out ping result
 	for i := 0; i < numRoutines; i++ {
-		fmt.Println(<-channel)
+		printer(<-channel)
+		//fmt.Println(<-channel)
 	}
 }
